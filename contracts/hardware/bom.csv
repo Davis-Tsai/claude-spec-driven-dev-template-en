@@ -1,0 +1,6 @@
+Ref,Part Number,Description,Value,Package,Qty,Manufacturer,Notes
+U1,,Main controller MCU,,,1,,
+U2,,Sensor,,,1,,
+R1,,Resistor,10k,0603,1,,pull-up
+C1,,Capacitor,100nF,0603,1,,decoupling
+J1,,Power connector,,,1,,5V input

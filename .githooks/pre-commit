@@ -1,0 +1,22 @@
+#!/bin/sh
+# =====================================================================
+# pre-commit — sync guard for a spec-driven repository (Q2)
+# Purpose: automatically run acceptance tests before commit, to block "the contract/documents changed but the code did not keep up".
+# The test command is centralized in acceptance/run-tests.sh; when not yet set up, let it through with a reminder.
+# Installation: git config core.hooksPath .githooks (handled by Bootstrap, see CLAUDE.md §0.5)
+# =====================================================================
+RUNNER="acceptance/run-tests.sh"
+
+if [ -f "$RUNNER" ]; then
+  sh "$RUNNER"
+  if [ "$?" -ne 0 ]; then
+    echo ""
+    echo "❌ Acceptance tests did not pass; commit aborted."
+    echo "   Please fix the code until it meets the contract, or sync the documents/tests first."
+    echo "   (If you really must skip: git commit --no-verify, but this means documents and code may be out of sync)"
+    exit 1
+  fi
+else
+  echo "⚠️  Cannot find $RUNNER, skipping acceptance tests (test command not set up yet)."
+fi
+exit 0

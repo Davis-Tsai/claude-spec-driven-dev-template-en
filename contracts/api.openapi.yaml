@@ -1,0 +1,41 @@
+# =====================================================================
+# API Contract (OpenAPI 3.1)
+# status: Draft
+# Description: This file is the "deterministic anchor". API communication between the
+#       frontend, backend, and firmware must conform to this contract.
+#       When rebuilding, generate the API skeleton and client based on this file.
+# =====================================================================
+# ⚠️ Example — delete when starting real content: the API below is a format demonstration; replace it with your own interface when starting a real project.
+openapi: 3.1.0
+info:
+  title: Project API
+  version: 0.1.0
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /devices/{serial_no}/telemetry:
+    post:
+      summary: Device reports telemetry data (HW → API)
+      parameters:
+        - name: serial_no
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelemetryIn'
+      responses:
+        '201': { description: Received }
+        '400': { description: Malformed format }
+        '404': { description: Device not found }
+components:
+  schemas:
+    TelemetryIn:
+      type: object
+      required: [ts, value]
+      properties:
+        ts:    { type: string, format: date-time }
+        value: { type: number }

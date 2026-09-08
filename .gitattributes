@@ -1,0 +1,6 @@
+# Normalize line-ending handling to avoid cross-platform issues (especially Windows CRLF)
+* text=auto
+
+# Shell scripts must always use LF; otherwise Windows CRLF would cause the pre-commit hook / test scripts to fail
+*.sh text eol=lf
+.githooks/* text eol=lf
