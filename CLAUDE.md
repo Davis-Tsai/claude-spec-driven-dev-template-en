@@ -119,6 +119,10 @@ When handling **N/A** dimensions:
   to change a contract, first confirm with the user, and record an ADR explaining the reason for the change (because a contract change cascades into code regeneration).
 - Use standard formats (SQL / OpenAPI / CSV), keeping them unambiguous.
 
+### Hardware contracts (`contracts/hardware/`)
+- **Pinout records not just pin↔signal, but each pin's "internal configuration"**: AF/mux mode, GPIO push-pull/open-drain, pull-up/down, speed, voltage level.
+- **For component-to-component / board-to-board connections, use the "Connection Configuration Matrix" in `pinout.md` to list both ends' configurations and check compatibility** (direction, voltage level, protocol mode, whether open-drain has a pull-up) — this is the key to regenerating firmware pin config and to verifying a connection in one place; don't let the configuration hide only in the code.
+
 ### Acceptance (`acceptance/`)
 - Software uses Gherkin; each Scenario maps to one AC-ID, and each AC-ID maps back to a PRD requirement.
 - Hardware uses manual measurement procedure tables; do not try to automate them into software tests.
