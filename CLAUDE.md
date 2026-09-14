@@ -34,6 +34,9 @@ This template is distributed as a **GitHub template repository** (`Use this temp
    - ⚠️ The `core.hooksPath` setting is written in `.git/config` and **does not travel with version control**. If this project is later cloned elsewhere,
      the hook will not take effect automatically; you must re-run `git config core.hooksPath .githooks` in that clone.
 
+5. **Remind the user to set the references Base**: if this project will use reference materials (datasheets / standards / vendor docs…),
+   remind the user to set the **Base path** in `references/registry.md` (pointing to the references directory on Google Drive); see `references/README.md`.
+
 > Only begin subsequent development after completing the self-check and confirming you are in a clean local Git repository.
 
 ---
@@ -93,6 +96,8 @@ When handling **N/A** dimensions:
 | `requirements/ERD.md` | Technical structure, hardware/software boundary, traceability table | Sync after PRD changes |
 | `requirements/decisions/` | ADR architecture decision records | Every major technical decision |
 | `requirements/ui/` | UI/UX prototypes and flows | Interface design |
+| `references/README.md` | References norms (boundaries, Drive split, how Claude reads) | Mostly unchanged |
+| `references/registry.md` | Reference registry (Base + link list pointing to Google Drive; **the file to fill in**) | When there is new reference material |
 | `contracts/data-schema.sql` | DB structure contract | DB model finalized/changed |
 | `contracts/api.openapi.yaml` | API contract | Interface finalized/changed |
 | `contracts/hardware/` | Pinout, timing, electrical, BOM | Hardware spec finalized/changed |
@@ -229,6 +234,7 @@ When you receive this kind of instruction, **first delete or ignore the influenc
 - **Definition of Done**: before reporting "done", cross-check each item against `charter/definition-of-done.md`.
 - **Risks**: when you discover a risk or a change in one, record it in `charter/risk-register.md`.
 - **Environment/Secrets**: when you need configuration or keys, see `ops/environment.md`; never commit secrets (Golden Rule 7).
+- **References**: `references/` holds input material (pointers into Google Drive, not the truth). **The registry in `references/registry.md` is auto-maintained by you (Claude)** — after reading the references directory or receiving a file the user provides, automatically add/update the corresponding REF row; the Base (paths) is set by the user. You may read the entire `references\` directory tree under that Base as reference for analysis. See `references/README.md`.
 
 ---
 
