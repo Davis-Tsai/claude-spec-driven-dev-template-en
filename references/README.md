@@ -19,6 +19,8 @@ status: Ongoing
 - In Drive, organize by category (`datasheets` / `standards` / `vendor-docs` / `notes` / `captures`…), matching the "Category" column in the registry.
 
 ## How Claude reads them
+- **Judge each Base line individually (important)**: evaluate each line in the Base section on its own — a line containing an angle-bracket placeholder (e.g. `<your-project>`) = **unset**, skip it; a concrete path (no angle brackets) = **set**, read it directly.
+  **If any Base is a concrete path, go read it**; do not conclude the whole references is unset just because other Base lines are still placeholders or example REF rows remain.
 - Claude **may read all files and subfolders under the `references\` directory tree at the declared Base** (see the authorization note in `registry.md`).
 - Mounted as a local `G:\` path, Claude can read it (PDFs too); a **`https://drive.google.com/...` URL cannot be opened directly** — use the `G:\` path.
 - For efficiency: when you know which file, **name that file/section**; for large PDFs read only the needed sections rather than loading everything into context.
@@ -28,6 +30,8 @@ status: Ongoing
 
 ## Who maintains it
 - **Base (paths) → set by the user**: Claude cannot know your Drive path / drive letter, so you fill this line (or Claude asks you once).
+  **You can also just paste the folder's `G:\` path to Claude, and Claude fills/updates the Base for you — no manual editing needed.**
 - **The registry (REF rows) → auto-maintained by Claude**: after Claude reads the references directory, or you hand it a file, it **automatically adds/updates the corresponding REF row** (id, category, title, Base, location, version, one-liner); you do not hand-edit the table.
 - **What "auto" means**: Claude syncs the table **while working on this project** (reading the references directory / receiving a file you give it), not as a background watcher. If you drop files into Drive outside a session, next time just ask Claude to "sync references".
+- **On first registration for a real project**, Claude proactively removes **unused BASE placeholder lines** (those containing `<...>`) and the **example REF rows**, leaving only real content.
 - The registry is a **living index**: its status stays "Ongoing" and it is **not subject to the finalize / change-management flow** (what needs strict control is `contracts/`).

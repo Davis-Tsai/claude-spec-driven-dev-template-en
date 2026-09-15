@@ -36,6 +36,7 @@ This template is distributed as a **GitHub template repository** (`Use this temp
 
 5. **Remind the user to set the references Base**: if this project will use reference materials (datasheets / standards / vendor docs…),
    remind the user to set the **Base path** in `references/registry.md` (pointing to the references directory on Google Drive); see `references/README.md`.
+   - The user can also **just paste the folder's `G:\` path to you**, and you fill/update the Base in the registry for them — no manual editing needed.
 
 > Only begin subsequent development after completing the self-check and confirming you are in a clean local Git repository.
 
@@ -235,6 +236,7 @@ When you receive this kind of instruction, **first delete or ignore the influenc
 - **Risks**: when you discover a risk or a change in one, record it in `charter/risk-register.md`.
 - **Environment/Secrets**: when you need configuration or keys, see `ops/environment.md`; never commit secrets (Golden Rule 7).
 - **References**: `references/` holds input material (pointers into Google Drive, not the truth). **The registry in `references/registry.md` is auto-maintained by you (Claude)** — after reading the references directory or receiving a file the user provides, automatically add/update the corresponding REF row; the Base (paths) is set by the user. You may read the entire `references\` directory tree under that Base as reference for analysis. See `references/README.md`.
+  - **Judge each Base line individually**: an angle-bracket `<...>` placeholder = unset; a concrete path (no `<>`) = set, **go read it**. If any Base is a concrete path, read it; **do not misjudge the whole references as unset just because other Base lines are still placeholders or example REF rows remain**. On first real registration, clear unused BASE placeholder lines and example rows.
 
 ---
 

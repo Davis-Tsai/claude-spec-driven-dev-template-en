@@ -17,17 +17,18 @@ status: Ongoing
 **How to fill in** (this section is for you to edit, not an example):
 - One Base per Drive; **if you only use one Drive, keep just the `BASE-A` line**; add `BASE-B`, `BASE-C`… only when spanning Drives.
 - Format per line: `` `LABEL`: `path` ``. Fill the path up to the **parent folder of `references`**, ending with `\`.
+- **A line containing an angle-bracket placeholder `<...>` = not yet set**; once you fill a concrete path (no `<>`) it is set, and Claude judges line-by-line and reads concrete paths directly.
 - The trailing parenthesis `(…)` is a **note for yourself** — keep, edit, or delete it; it does not affect Claude's reading.
 - **Full path = the Base here + the "Location" column below.** When you change machine / move the project / switch Drive → change only the corresponding Base line; the table stays untouched.
 
-**Fill-in area** (replace the below with your actual paths; delete lines you don't use):
+**Fill-in area** (replace the below with your actual paths; delete lines you don't use. **Don't want to edit by hand? Paste the folder's `G:\` path to Claude and it will fill it in for you**):
 - `BASE-A`: `G:\Shared drives\<your-project>\`  (company / Shared Drive)
 - `BASE-B`: `G:\My Drive\<your-folder>\`  (personal / My Drive; delete this line if none)
 
 > When Claude reads, it concatenates "Base + Location", e.g. `G:\Shared drives\<your-project>\` + `references\datasheets\ICM-42688.pdf`.
 
 ## Registry table
-> ⚠️ Example — delete when starting real content: the rows below are format demonstrations (Claude clears these example rows when it first logs a real item).
+> ⚠️ Example — delete when starting real content: the rows below are format demonstrations. **When Claude first registers for a real project, it clears these example rows and the unused BASE placeholder lines above (those containing `<...>`).**
 > This table is auto-maintained by Claude: after reading the references directory or receiving a file you provide, it adds/updates the corresponding REF row.
 
 | REF-ID | Category | Title | Base | Location (relative to that Base) | Version / Date consulted | One-liner |
