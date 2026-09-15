@@ -8,21 +8,53 @@
 
 ## How to Start a New Project (Quick Start)
 
-This is a **GitHub template repository**. There are three ways to get a clean project:
+This is a **GitHub template repository**. The end goal of getting it from GitHub is usually **cloud backup + team collaboration**,
+so below we spell out each way to obtain it, and how to actually connect it to the cloud.
 
-- **A. Use this template (most recommended)**: on this repo's page, click **Use this template → Create a new repository**,
-  and GitHub produces a **brand-new repo with no build history**; just `git clone` it, and it inherently contains no template history.
-- **B. Download ZIP**: download → unzip → the folder is your new project (no `.git`).
-- **C. Clone then reset**: `git clone` this repo → delete `.git` and re-run `git init` (to avoid carrying over the template build history).
+### Step 1: Get the files onto your machine (pick one)
 
-Then:
-1. Open Claude Code in your new project folder.
-2. **As your very first message, simply say:**
+**A. Use this template (most recommended)**
+1. On this repo's page, click **Use this template → Create a new repository** to create a new repo under your account.
+2. Clone it locally:
+   ```
+   git clone https://github.com/<your-account>/<new-repo>.git
+   cd <new-repo>
+   ```
+   - Traits: the new repo is already on your GitHub (**cloud backup/collaboration from the start**), clean history, no template build history.
 
-   > Please initialize this project per CLAUDE.md
+**B. Download ZIP**
+1. On this repo's page, click **Code → Download ZIP** and unzip it where you want.
+   - Traits: a plain folder, no `.git`, not yet on the cloud (for backup/collaboration see Step 3).
 
-   Claude Code will run the version-control self-check (if there is no Git, `git init` + first commit, and install the pre-commit hook), then begin development.
-   The GitHub remote is handled by you; the AI will not connect or push on your behalf.
+**C. Clone then reset**
+```
+git clone https://github.com/Davis-Tsai/claude-spec-driven-dev-template-en.git <new-project>
+cd <new-project>
+rm -rf .git        # ⚠️ Must do this: clears the template's history and remote, otherwise commit/push will pollute the template
+```
+   - Traits: obtains files via git, but **must be reset** to be clean; after reset it's the same as B (local only, not yet on the cloud).
+
+> **How to choose**: want cloud backup/collaboration from the start → **A**; just try locally/offline first → **B**; used to `git clone` → **C (remember to reset)**.
+
+### Step 2: Initialize (open Claude Code)
+Open Claude Code in your new project folder, and as your first message:
+
+> Please initialize this project per CLAUDE.md
+
+Claude Code will run the version-control self-check (if there is no Git, `git init` + first commit, install the pre-commit hook), remind you to set the references Base, then begin development.
+
+### Step 3: Connect cloud backup / collaboration
+- **A**: already done (the new repo is on your GitHub).
+- **B / C**: once you have a local commit, create a GitHub repo yourself and push (after pushing it's identical to A):
+  ```
+  # First create an empty new repo on GitHub, then:
+  git remote add origin https://github.com/<your-account>/<new-repo>.git
+  git branch -M main
+  git push -u origin main
+  ```
+  (With GitHub CLI, in one step: `gh repo create <new-repo> --private --source=. --remote=origin --push`)
+
+> Note: connecting to GitHub is **done by you**; per `CLAUDE.md §0.5`, the AI will not create a remote or push on its own.
 
 ---
 
