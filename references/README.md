@@ -17,6 +17,7 @@ status: Ongoing
 - **Personal projects → My Drive.**
 - **Company projects → must use a Shared Drive** (files are owned by the team; links don't break when someone leaves, and a successor gets access via team membership).
 - In Drive, organize by category (`datasheets` / `standards` / `vendor-docs` / `notes` / `captures`…), matching the "Category" column in the registry.
+- **Reference Bases aren't limited to Google Drive**: a **local adjacent project repo** (e.g. the spec of the counterpart device you interface with) can also be registered as a Base (e.g. `BASE-C`), serving as the source of truth for cross-project integration.
 
 ## How Claude reads them
 - **Judge each Base line individually (important)**: evaluate each line in the Base section on its own — a line containing an angle-bracket placeholder (e.g. `<your-project>`) = **unset**, skip it; a concrete path (no angle brackets) = **set**, read it directly.

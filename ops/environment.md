@@ -19,6 +19,9 @@ status: Draft
 | e.g. TI SimpleLink SDK | vX | ti.com/... (manual download, login required) | User | check install directory | Not installed |
 | e.g. arm-none-eabi-gcc | vX | apt / brew / official | User or AI (with consent) | `arm-none-eabi-gcc --version` | Not installed |
 
+> **Consolidated install milestone**: once all tech-stack ADRs are finalized, output one "complete install-order list (with versions)" at once, rather than letting the user discover missing pieces along the way.
+> **Pinned vs as-installed reconciliation**: record both the "decided version" and the "as-installed version"; when they differ, verify compatibility and note it (e.g., decided TI-CGT 16.9.4, as-installed 16.9.6 via the IDE, verified compatible).
+
 ### Install policy (what Claude can install for you, what needs you)
 - **Claude can install (with your consent)**: anything installable via a **package manager / CLI** (pip / npm / winget / choco / scoop / brew / apt / cargo…) and project dependencies (requirements.txt / package.json…) — **just say "install it for me", and Claude proposes the command, you approve, Claude installs and runs the verify command**; no need to look up how to install.
 - **Needs you (manual)**: vendor SDKs / IDEs (login / GUI / manual download required, e.g. TI SimpleLink, STM32CubeIDE…) and hardware drivers — Claude only provides the official link + steps + verify command.

@@ -99,8 +99,9 @@ When handling **N/A** dimensions:
 | `requirements/ui/` | UI/UX prototypes and flows | Interface design |
 | `references/README.md` | References norms (boundaries, Drive split, how Claude reads) | Mostly unchanged |
 | `references/registry.md` | Reference registry (Base + link list pointing to Google Drive; **the file to fill in**) | When there is new reference material |
-| `contracts/data-schema.sql` | DB structure contract | DB model finalized/changed |
-| `contracts/api.openapi.yaml` | API contract | Interface finalized/changed |
+| `contracts/interfaces.md` | Interfaces contract (packet/serial/command; the interface truth for non-web projects) | When defining/changing interfaces |
+| `contracts/data-schema.sql` | DB structure contract (**use if applicable**, else N/A) | DB model finalized/changed |
+| `contracts/api.openapi.yaml` | API contract (**use if applicable**, else N/A) | Interface finalized/changed |
 | `contracts/hardware/` | Pinout, timing, electrical, BOM | Hardware spec finalized/changed |
 | `acceptance/software/` | Software acceptance (Gherkin, executable) | Defining/changing acceptance criteria |
 | `acceptance/hardware/` | Hardware acceptance (manual measurement procedures) | Defining/changing measurement procedures |
@@ -124,10 +125,12 @@ When handling **N/A** dimensions:
 - This is where the most care is needed. **If a document's status is "Final", do not modify it arbitrarily**;
   to change a contract, first confirm with the user, and record an ADR explaining the reason for the change (because a contract change cascades into code regeneration).
 - Use standard formats (SQL / OpenAPI / CSV), keeping them unambiguous.
+- **Interface truth depends on project type**: non-web/DB projects (embedded/protocol/CLI) use `contracts/interfaces.md` (packet/serial/command) as the interface contract; `data-schema.sql` and `api.openapi.yaml` are **used only if applicable**, otherwise marked `N/A`.
 
 ### Hardware contracts (`contracts/hardware/`)
 - **Pinout records not just pin↔signal, but each pin's "internal configuration"**: AF/mux mode, GPIO push-pull/open-drain, pull-up/down, speed, voltage level.
 - **For component-to-component / board-to-board connections, use the "Connection Configuration Matrix" in `pinout.md` to list both ends' configurations and check compatibility** (direction, voltage level, protocol mode, whether open-drain has a pull-up) — this is the key to regenerating firmware pin config and to verifying a connection in one place; don't let the configuration hide only in the code.
+- **Safe state / fail-safe**: when an **actuator/relay/motor/safety-related output** is detected, require ① an **explicit safe-state decision** (which physical state = safe, per the hazard model); ② **fail-safe design** (the safe state is the one it passively falls to when de-energized/undriven, not held by continuous MCU output); ③ a `charter/risk-register.md` entry; ④ an `acceptance/` check that "all fault scenarios return to the safe state".
 
 ### Acceptance (`acceptance/`)
 - Software uses Gherkin; each Scenario maps to one AC-ID, and each AC-ID maps back to a PRD requirement.
@@ -140,6 +143,7 @@ When handling **N/A** dimensions:
   This is the key to "not selecting a different technology on regeneration" — without an ADR, the regenerated result may not be equivalent.
 - After selecting the tech stack, remember to fill the corresponding test commands into `acceptance/run-tests.sh` (see §5), so the pre-commit protection actually takes effect.
 - **Seed the toolchain list**: each time you record a tech-stack ADR (language/framework/DB/MCU/SDK/toolchain), add a corresponding row to the "Toolchain Readiness" list in `ops/environment.md`, and remind the user: this tool needs to be installed; later generation/build will use it.
+- **Change criterion**: a **decision reversal** (e.g. switching compiler/build method) → add a new ADR "supersedes ADR-XXXX", marking the old one deprecated with its content preserved; a **mere clarification / pinning down a deferred point** (decision unchanged) → add an in-place "revision note". Both go through `changes/change-log.md`.
 
 ---
 
@@ -159,6 +163,14 @@ Before the user finalizes, the AI first runs and reports:
 - Are the hardware contracts (pinout/timing/electrical/BOM) consistent with each other?
 
 Report "ready to finalize ✅ / N items pending ⚠️", and let the user decide whether to finalize.
+
+### Tech-stack Feasibility Verification (mandatory before finalizing a tech-stack ADR)
+Before finalizing any ADR that selects a "device/SDK/framework/protocol/toolchain", the AI must verify and report:
+- Does the SDK/tool support the **exact device model and silicon revision** (not just the chip family)? Source?
+- Is the chosen **protocol/band/interface** actually supported by this option (avoid picking a similar-but-wrong one)?
+- Does the **exact toolchain version exist and is it downloadable** (incl. legacy/archived)? Which compiler does the vendor officially pin?
+- Attach a **traceable source** for each point (official site / release notes). If not found or in doubt → mark ⚠️; do not finalize on your own.
+> Rationale: once the tech stack is finalized it cascades into code generation and much downstream; the cost of a wrong choice far exceeds a few minutes of verification before finalizing.
 
 ### Contract Freeze
 A `contracts/` document marked "Final" = contract freeze; only after this is it appropriate to generate code at scale (see §5).
@@ -228,6 +240,13 @@ Generating/regenerating "documents and pure logic" can be done first; but **befo
 | Before generating code in §5 | Environment-readiness gate; if items are missing, provide an install list |
 | First time compiling/running tests | Verify versions, update readiness status; do not falsely report pass if not ready |
 | Hardware bring-up | Remind about the flasher/drivers (e.g., XDS110 VCP, UniFlash) and physical board needs |
+
+### Portable-Logic-First (recommended pattern for firmware/embedded)
+Much firmware logic (protocol codec, state machines, data formats, threshold math) is actually **chip-independent**. Recommended split:
+- **Portable core** (pure language, no platform dependency) → can be **compiled directly with a host compiler + unit-tested** (`host-selftest`), so the **contract can be verified even without the target SDK installed** (packet layout / checksum / state transitions…).
+- **HAL interface + platform stubs** (GPIO/UART/RF/WDT, SDK-dependent) → exist as `TODO` stubs when not ready; fill in once the environment is ready.
+> Therefore **generate portable logic first and verify the contract via host tests**, leaving the platform-dependent layer until the environment is ready (echoing the "Environment Readiness" gate).
+> `acceptance/run-tests.sh` may add: if a host compiler is detected → compile and run the pure-logic host tests (so pre-commit actually has tests to block with).
 
 ### Code Synchronization After Contract Changes
 - **Spec-first**: feature changes always change the documents first, then update the code (§1 Golden Rule 6). Code is not allowed to jump ahead.
