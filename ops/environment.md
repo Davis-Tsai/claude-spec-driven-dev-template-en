@@ -19,10 +19,11 @@ status: Draft
 | e.g. TI SimpleLink SDK | vX | ti.com/... (manual download, login required) | User | check install directory | Not installed |
 | e.g. arm-none-eabi-gcc | vX | apt / brew / official | User or AI (with consent) | `arm-none-eabi-gcc --version` | Not installed |
 
-### Install policy (the AI does not install software on its own)
-- By default the AI **only provides**: official download links, install steps, verify commands, for the user to run (large-vendor SDKs often require login/authorization; the AI cannot download them).
-- When it can be installed via a package manager (apt/brew/pip/choco…) **and the user explicitly consents**, the AI may run the install command on their behalf; still subject to per-command permission, **never a silent install**.
-- The AI changes a status to `Verified` only after running the verify command (version) to confirm.
+### Install policy (what Claude can install for you, what needs you)
+- **Claude can install (with your consent)**: anything installable via a **package manager / CLI** (pip / npm / winget / choco / scoop / brew / apt / cargo…) and project dependencies (requirements.txt / package.json…) — **just say "install it for me", and Claude proposes the command, you approve, Claude installs and runs the verify command**; no need to look up how to install.
+- **Needs you (manual)**: vendor SDKs / IDEs (login / GUI / manual download required, e.g. TI SimpleLink, STM32CubeIDE…) and hardware drivers — Claude only provides the official link + steps + verify command.
+- When unsure which category, Claude **judges first (checks whether the package manager has it, runs `--version`) and tells you** — no blind guessing.
+- Every install command is **still approved per-command**; Claude **never installs silently**; a status becomes `Verified` only after running the verify command (version).
 - **Never report "built/tests passed" when a tool is absent** — state clearly "skipped: toolchain not installed".
 
 ## 2. Environment Variables

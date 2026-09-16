@@ -265,3 +265,4 @@ Generating/regenerating "documents and pure logic" can be done first; but **befo
 - The user wants to "finalize a contract" → confirm the content, add an ADR if necessary, and let the user promote the status.
 - The user says "generate/regenerate" → execute per §5.
 - The user asks "where is this project now" → look at each document's `status:` and `charter/open-questions.md`.
+- **Proactively flag "I can do this step"**: for anything automatable (package install, running tests, generating/regenerating files, git operations, checking the environment…), tell the user you can do it for them — don't let them manually do what you can do; outward/destructive actions still require consent first.
