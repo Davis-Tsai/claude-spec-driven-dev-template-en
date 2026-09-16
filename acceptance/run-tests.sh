@@ -8,6 +8,11 @@
 # e.g.:  pytest acceptance/        (Python)
 #        npm test                  (Node)
 #        behave acceptance/software (Gherkin/behave)
+#
+# When the toolchain is not installed (see ops/environment.md Toolchain Readiness):
+#   skip gracefully and exit 0 (don't block the commit), but the output MUST clearly
+#   state "skip != pass"; do not let a green light mislead. Once the toolchain is
+#   ready, it actually runs the tests.
 # =====================================================================
 
 echo "=================================================================="

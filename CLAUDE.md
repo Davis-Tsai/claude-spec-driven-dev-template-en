@@ -91,7 +91,7 @@ When handling **N/A** dimensions:
 | `charter/risk-register.md` | Risk register | When discovering/updating a risk |
 | `charter/reverse-spec-checklist.md` | Reverse spec-ing procedure (SOP) | When documenting an existing project (see §4.5) |
 | `charter/reverse-spec-provenance.md` | Reverse spec-ing provenance record (only needed for reverse projects) | When documenting an existing project (see §4.5) |
-| `ops/environment.md` | Environment variables and secret management | Setting up the environment, handling secrets |
+| `ops/environment.md` | Environment variables, secrets, **toolchain readiness list** | Setting up env, handling secrets, when a tech-stack ADR is finalized |
 | `changes/change-log.md` | Change log (modification history of finalized documents) | Each time a finalized document is modified (see §4) |
 | `requirements/PRD.md` | Product requirements (intent layer, **no implementation**) | Requirement added/changed |
 | `requirements/ERD.md` | Technical structure, hardware/software boundary, traceability table | Sync after PRD changes |
@@ -139,6 +139,7 @@ When handling **N/A** dimensions:
   record one ADR for each, and reference its number in the tech-stack selection table of `requirements/ERD.md`.
   This is the key to "not selecting a different technology on regeneration" — without an ADR, the regenerated result may not be equivalent.
 - After selecting the tech stack, remember to fill the corresponding test commands into `acceptance/run-tests.sh` (see §5), so the pre-commit protection actually takes effect.
+- **Seed the toolchain list**: each time you record a tech-stack ADR (language/framework/DB/MCU/SDK/toolchain), add a corresponding row to the "Toolchain Readiness" list in `ops/environment.md`, and remind the user: this tool needs to be installed; later generation/build will use it.
 
 ---
 
@@ -199,7 +200,9 @@ The strongest verification is the "round-trip regeneration test" (regenerating t
 
 ## 5. Generating / Regenerating Code
 
-**Precondition**: the relevant `contracts/` are finalized (see §4).
+**Preconditions**:
+- The relevant `contracts/` are finalized (see §4).
+- **The build/test environment is ready** (see "Environment Readiness" below) — documents and pure logic can be generated first, but **before compiling / running tests / flashing**, the environment must be ready.
 
 **Flow**:
 1. Read only `requirements/` + `contracts/` + `acceptance/`.
@@ -211,12 +214,28 @@ The strongest verification is the "round-trip regeneration test" (regenerating t
 > "Please read only requirements/, contracts/, acceptance/, regenerate src/ and the firmware, and pass all tests in acceptance/."
 When you receive this kind of instruction, **first delete or ignore the influence of the old `src/` contents**, and regenerate purely from the documents.
 
+### Environment Readiness
+Generating/regenerating "documents and pure logic" can be done first; but **before compiling, running tests, or flashing**, the environment must be ready:
+1. Derive the required toolchain from the finalized tech-stack ADRs (SDK, compiler, RTOS, runtime, DB, flasher…).
+2. Check the "Toolchain Readiness" list in `ops/environment.md`: **missing items → stop, provide an install list (official links + versions + verify commands); do not pretend the environment is ready**.
+3. **Install policy** (see `ops/environment.md`): **the AI does not install on its own**; it only gives links/steps/verify commands; a package-manager install requires explicit user consent to run on their behalf, never silently.
+4. **"Can generate code" ≠ "can build/verify code"**: when tools are missing, code can be generated, but **do not report "built/tests passed"** — state clearly "skipped: toolchain not installed".
+
+**Trigger cheat-sheet**
+| When | Action |
+|------|--------|
+| A tech-stack ADR is finalized | Seed the toolchain list in `ops/environment.md` + remind to install |
+| Before generating code in §5 | Environment-readiness gate; if items are missing, provide an install list |
+| First time compiling/running tests | Verify versions, update readiness status; do not falsely report pass if not ready |
+| Hardware bring-up | Remind about the flasher/drivers (e.g., XDS110 VCP, UniFlash) and physical board needs |
+
 ### Code Synchronization After Contract Changes
 - **Spec-first**: feature changes always change the documents first, then update the code (§1 Golden Rule 6). Code is not allowed to jump ahead.
 - **Update strategy**: use a **local update** for small changes (change only the affected code); when changes accumulate or drift is suspected, do a **full regeneration** to verify.
 - **Sync is determined by tests**: contract changes → first update the corresponding tests in `acceptance/` → run the tests, and only when all pass does "code is synced" hold.
 - **Automatic protection**: this repository installs a pre-commit hook (see §0.5 installation), which automatically runs `acceptance/run-tests.sh` before a commit;
   if it fails, the commit is blocked, mechanically preventing "the contract changed but the code did not keep up". Test commands are maintained centrally in `acceptance/run-tests.sh`.
+- **Skip ≠ pass**: when `run-tests.sh` cannot detect the toolchain, it should **skip gracefully and `exit 0`** (not block the commit), but its output must clearly state "**skip ≠ pass**"; once the toolchain is ready it starts actually running, so the user isn't misled by a green light.
 - Record each sync result in the "whether code regeneration is needed" column of `changes/change-log.md`.
 
 ---
